@@ -1,14 +1,21 @@
 "use client"
 
 import { useTheme } from "next-themes"
-import { Toaster as Sonner, ToasterProps } from "sonner"
+import { Toaster as Sonner, type ToasterProps } from "sonner"
 
-const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+type Props = Omit<ToasterProps, "theme">;
+
+const Toaster = ({ ...props }: Props) => {
+  const { theme } = useTheme();
+
+  // Narrow next-theme's string/undefined to Sonner's allowed values
+  const sonnerTheme: NonNullable<ToasterProps["theme"]> =
+    theme === "light" || theme === "dark" || theme === "system" ? theme : "system";
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      {...props}
+      theme={sonnerTheme}
       className="toaster group"
       style={
         {
@@ -17,7 +24,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-border": "var(--border)",
         } as React.CSSProperties
       }
-      {...props}
     />
   )
 }

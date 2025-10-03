@@ -82,7 +82,11 @@ const MSG_SNIPPETS = [
 ];
 
 function pick<T>(rand: () => number, arr: readonly T[]): T {
-  return arr[Math.floor(rand() * arr.length)];
+  if (arr.length === 0) {
+    throw new Error("pick: cannot pick from an empty array");
+  }
+  const idx = Math.floor(rand() * arr.length);
+  return arr[idx]!;
 }
 function pickMany<T>(rand: () => number, arr: readonly T[], min = 1, max = 2): T[] {
   const n = min + Math.floor(rand() * (max - min + 1));
@@ -175,7 +179,7 @@ export default function WorkOrdersDashboard() {
   const [thread, setThread] = React.useState<CommentItem[]>([]);
 
   // Single accordion: only one machine expanded at a time (across both projects)
-  const [openItem, setOpenItem] = React.useState<string | undefined>(undefined);
+  const [openItem, setOpenItem] = React.useState("");
 
   const subcom = MACHINES.filter((m) => m.project === "Subcom");
   const inhouse = MACHINES.filter((m) => m.project === "In-House");

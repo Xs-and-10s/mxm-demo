@@ -259,7 +259,7 @@ export default function MachinesDashboard() {
               filter={filter}
               onFilterChange={setFilter}
               onVisibleDataChange={setVisibleMachines}
-              selectedMachineId={selectedId ?? undefined}
+              selectedMachineId={selectedId ?? ""}
             />
           </CardContent>
         </Card>
