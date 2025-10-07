@@ -21,25 +21,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import type { MachineT } from "@/domain/machine";
 
 /** Domain model shared by MachinesDashboard + charts */
-export type Machine = {
-  machineId: string;
-  status: "Running" | "Down";
-  timeDownMinutes: number;
-  project: "Subcom" | "In-House";
-  mtbfHours: number;
-  mttrHours: number;
-  mtbfTrend?: number[];
-  mttrTrend?: number[];
-};
+// export type Machine = {
+//   machineId: string;
+//   status: "Running" | "Down";
+//   timeDownMinutes: number;
+//   project: "Subcom" | "In-House";
+//   mtbfHours: number;
+//   mttrHours: number;
+//   mtbfTrend?: number[];
+//   mttrTrend?: number[];
+// };
 
 type Props = {
-  data: Machine[];
+  data: MachineT[];
   filter: string;
   onFilterChange: (value: string) => void;
   /** Bubble the currently visible (filtered/sorted) rows up to the parent (for charts). */
-  onVisibleDataChange?: (rows: Machine[]) => void;
+  onVisibleDataChange?: (rows: MachineT[]) => void;
   /** Row to visually highlight (from chart click). */
   selectedMachineId?: string;
 };
@@ -60,14 +61,14 @@ const STATUS_COLORS = {
 };
 
 // Project tint for selected-row highlight
-const PROJECT_TINT: Record<Machine["project"], { bg: string; border: string }> = {
+const PROJECT_TINT: Record<MachineT["project"], { bg: string; border: string }> = {
   Subcom: { bg: "rgba(2,132,199,0.12)", border: "#0284c7" }, // blue
   "In-House": { bg: "rgba(245,158,11,0.15)", border: "#f59e0b" }, // yellow
 };
 
 // ---------------- columns ----------------
 
-const columns: ColumnDef<Machine, any>[] = [
+const columns: ColumnDef<MachineT, any>[] = [
   // Hidden but searchable
   {
     accessorKey: "project",
@@ -96,7 +97,7 @@ const columns: ColumnDef<Machine, any>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as Machine["status"];
+      const status = row.getValue("status") as MachineT["status"];
       const swatch = status === "Running" ? STATUS_COLORS.green : STATUS_COLORS.red;
       return (
         <Badge
@@ -139,7 +140,7 @@ export default function DataTable({
   });
 
   // Global filter includes hidden 'project' and formatted duration
-  const globalFilterFn: FilterFn<Machine> = (row, _columnId, value) => {
+  const globalFilterFn: FilterFn<MachineT> = (row, _columnId, value) => {
     const search = String(value ?? "").toLowerCase().trim();
     if (!search) return true;
     const m = row.original;

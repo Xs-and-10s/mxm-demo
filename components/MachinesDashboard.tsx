@@ -3,21 +3,21 @@
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import DataTable, { type Machine } from "@/components/DataTable";
+import DataTable from "@/components/DataTable";
 import MetricBarChart from "@/components/MetricBarChart";
 import FleetSparkline from "@/components/FleetSparkline";
 import FadeOnChange from "@/components/FadeOnChange";
+import type { MachineT } from "@/domain/machine";
 
 /* ----------------------------
    Base dataset and deterministic 4-week trends
 ----------------------------- */
 
-const BASE: Machine[] = [
+const BASE: Omit<MachineT, "mtbfTrend" | "mttrTrend">[] = [
   { machineId: "605", status: "Running", timeDownMinutes: 0,   project: "In-House", mtbfHours: 260, mttrHours: 1.2 },
   { machineId: "606", status: "Down",    timeDownMinutes: 125, project: "In-House", mtbfHours: 95,  mttrHours: 3.8 },
   { machineId: "607", status: "Running", timeDownMinutes: 0,   project: "Subcom",   mtbfHours: 280, mttrHours: 1.0 },
   { machineId: "608", status: "Down",    timeDownMinutes: 45,  project: "Subcom",   mtbfHours: 140, mttrHours: 2.6 },
-  // CHANGED: 609 is now Down (took 610's downtime), 610 is Running (took 609's 0m)
   { machineId: "609", status: "Down",    timeDownMinutes: 180, project: "Subcom",   mtbfHours: 240, mttrHours: 1.5 },
   { machineId: "610", status: "Running", timeDownMinutes: 0,   project: "Subcom",   mtbfHours: 110, mttrHours: 4.1 },
   { machineId: "611", status: "Running", timeDownMinutes: 0,   project: "In-House", mtbfHours: 220, mttrHours: 1.7 },
@@ -52,11 +52,11 @@ function makeTrend(current: number, seedKey: string, { driftPct, noisePct, min, 
     const val = clamp(base * driftFactor * (1 + noise), min, max);
     arr.push(Number(val.toFixed(1)));
   }
-  return arr;
+  return arr as [number, number, number, number];
 }
 
 // Enrich with 4-week trends
-const MACHINES: Machine[] = BASE.map((m) => {
+const MACHINES: MachineT[] = BASE.map((m) => {
   const seedBase = `${m.machineId}-${m.project}`;
   const mtbfOpts: TrendOpts =
     m.status === "Running"
@@ -124,7 +124,7 @@ function LegendSolidLine({ color, label }: { color: string; label: string }) {
 
 export default function MachinesDashboard() {
   const [filter, setFilter] = React.useState("");
-  const [visibleMachines, setVisibleMachines] = React.useState<Machine[]>(MACHINES);
+  const [visibleMachines, setVisibleMachines] = React.useState<MachineT[]>(MACHINES);
 
   // Selected machine for cross-highlight
   const [selectedId, setSelectedId] = React.useState<string | null>(null);

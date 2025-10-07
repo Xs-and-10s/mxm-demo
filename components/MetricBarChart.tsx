@@ -12,7 +12,8 @@ import {
   ReferenceLine,
 } from "recharts";
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
-import type { Machine } from "@/components/DataTable";
+// import type { Machine } from "@/components/DataTable";
+import type { MachineT } from "@/domain/machine";
 
 // ---- Colors
 const GRAY = "#6b7280"; // gray-500
@@ -38,7 +39,7 @@ const chartConfig = {
 type Metric = "mtbf" | "mttr";
 
 type Props = {
-  machines: Machine[];
+  machines: MachineT[];
   metric: Metric;
   height: number;
   barSize?: number;
@@ -225,13 +226,13 @@ export default function MetricBarChart({
 
   // For X-axis badges/text styling
   const statusById = React.useMemo(() => {
-    const map = new Map<string, "Running" | "Down">();
-    for (const d of data) map.set(d.machineId, d.status as "Running" | "Down");
+    const map = new Map<string, MachineT["status"]>();
+    for (const d of data) map.set(d.machineId, d.status);
     return map;
   }, [data]);
 
   const projectById = React.useMemo(() => {
-    const map = new Map<string, Machine["project"]>();
+    const map = new Map<string, MachineT["project"]>();
     for (const d of data) map.set(d.machineId, d.project);
     return map;
   }, [data]);
@@ -288,7 +289,7 @@ export default function MetricBarChart({
       const { x, y, payload } = props;
       const id = String(payload?.value ?? "");
       const status = statusById.get(id);
-      const project = projectById.get(id) ?? "Subcom";
+      const project: MachineT["project"] = projectById.get(id) ?? "Subcom";
       const palette = PROJ[project];
       const isDown = status === "Down";
       const textFill = isDown ? RED_STROKE : A11Y_TICK;

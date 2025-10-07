@@ -10,17 +10,20 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import WorkOrdersTable, {
-  type WorkOrder,
-  type WOStatus,
-  type WOPriority,
-  type WOCategory,
-  type WORecurrence,
+  // type WorkOrder,
+  // type WOStatus,
+  // type WOPriority,
+  // type WOCategory,
+  // type WORecurrence,
 } from "@/components/WorkOrdersTable";
-import CommentsThread, { type CommentItem } from "@/components/CommentsThread";
-import type { Machine } from "@/components/DataTable";
+import CommentsThread from "@/components/CommentsThread";
+import type { WorkOrderT, WOStatus, WOPriority, WOCategory, WORecurrence } from "@/domain/workorder";
+import type { CommentT } from "@/domain/comment";
+import type { MachineT } from "@/domain/machine";
+// import type { Machine } from "@/components/DataTable";
 
 /** Align with Machines dataset (609 Down, 610 Running) */
-const MACHINES: Pick<Machine, "machineId" | "project" | "status">[] = [
+const MACHINES: Pick<MachineT, "machineId" | "project" | "status">[] = [
   { machineId: "605", project: "In-House", status: "Running" },
   { machineId: "606", project: "In-House", status: "Down" },
   { machineId: "607", project: "Subcom",   status: "Running" },
@@ -112,10 +115,10 @@ function makeName(machineId: string, rand: () => number): string {
   return `${machineId} - ${pick(rand, PLAN_TITLES)}`;
 }
 
-function makeMockWOs(machineId: string, project: "Subcom" | "In-House"): WorkOrder[] {
+function makeMockWOs(machineId: string, project: "Subcom" | "In-House"): WorkOrderT[] {
   const rand = seedRng(`${project}-${machineId}-wo`);
   const n = 5 + Math.floor(rand() * 4); // 5..8 WOs
-  const arr: WorkOrder[] = [];
+  const arr: WorkOrderT[] = [];
   for (let i = 1; i <= n; i++) {
     const status = pick(rand, STATUSES);
     const priority = pick(rand, PRIORITIES);
@@ -140,10 +143,10 @@ function makeMockWOs(machineId: string, project: "Subcom" | "In-House"): WorkOrd
   return arr;
 }
 
-function makeMockComments(woId: string): CommentItem[] {
+function makeMockComments(woId: string): CommentT[] {
   const rand = seedRng(`${woId}-comments`);
   const count = Math.floor(rand() * 16); // 0..15
-  const out: CommentItem[] = [];
+  const out: CommentT[] = [];
   const base = Date.now() - Math.floor(rand() * 10 * 24 * 60 * 60 * 1000);
   let t = base;
   for (let i = 0; i < count; i++) {
@@ -163,8 +166,8 @@ function makeMockComments(woId: string): CommentItem[] {
 export default function WorkOrdersDashboard() {
   // Build WO map and per-WO comments (stable across renders)
   const { woByMachine, commentsByWO } = React.useMemo(() => {
-    const woMap = new Map<string, WorkOrder[]>();
-    const cmMap = new Map<string, CommentItem[]>();
+    const woMap = new Map<string, WorkOrderT[]>();
+    const cmMap = new Map<string, CommentT[]>();
     for (const m of MACHINES) {
       const wos = makeMockWOs(m.machineId, m.project);
       woMap.set(m.machineId, wos);
@@ -176,7 +179,7 @@ export default function WorkOrdersDashboard() {
   }, []);
 
   // Comments thread state
-  const [thread, setThread] = React.useState<CommentItem[]>([]);
+  const [thread, setThread] = React.useState<CommentT[]>([]);
 
   // Single accordion: only one machine expanded at a time (across both projects)
   const [openItem, setOpenItem] = React.useState("");

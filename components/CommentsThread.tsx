@@ -2,13 +2,7 @@
 
 import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-export type CommentItem = {
-  id: string;
-  author: string;
-  message: string;
-  ts: Date; // stored as UTC Date
-};
+import type { CommentT } from "@/domain/comment";
 
 /**
  * Format UTC as: dd-mm-yyyy, hh:ss _M
@@ -22,10 +16,10 @@ function fmtUtcDMY(d: Date): string {
   const am = hh < 12;
   hh = hh % 12 || 12;
   const ss = String(d.getUTCSeconds()).padStart(2, "0");
-  return `${dd}-${mm}-${yyyy}, ${String(hh).padStart(2, "0")}:${ss} ${am ? "AM" : "PM"}`;
+  return `${mm}/${dd}/${yyyy}, ${String(hh).padStart(2, "0")}:${ss} ${am ? "AM" : "PM"}`;
 }
 
-export default function CommentsThread({ items }: { items: CommentItem[] }) {
+export default function CommentsThread({ items }: { items: CommentT[] }) {
   if (!items || items.length === 0) {
     return (
       <div className="rounded-md border p-3 text-sm text-muted-foreground">

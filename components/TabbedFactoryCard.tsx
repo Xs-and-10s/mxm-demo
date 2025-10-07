@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MachinesDashboard from "@/components/MachinesDashboard";
 import WorkOrdersDashboard from "@/components/WorkOrdersDashboard";
 import { Skeleton } from "@/components/ui/skeleton";
+import MondayDashboard from "./monday/MondayDashboard";
 
 export default function TabbedFactoryCard() {
   return (
@@ -29,7 +30,7 @@ export default function TabbedFactoryCard() {
           </TabsContent>
 
           <TabsContent value="monday" className="mt-0">
-            <Skeleton className="h-[480px] w-full" />
+            <MondayDashboard />
           </TabsContent>
 
           <TabsContent value="mor" className="mt-0">

@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
-import type { Machine } from "@/components/DataTable";
+// import type { Machine } from "@/components/DataTable";
+import type { MachineT } from "@/domain/machine";
 
 type Props = {
   /** Visible machines after table filter + project chips */
-  machines: Machine[];
+  machines: MachineT[];
   metric: "mtbf" | "mttr";
   width?: number;  // kept for API compatibility (ResponsiveContainer handles actual sizing)
   height?: number; // kept for API compatibility
