@@ -124,3 +124,27 @@
 .grid-cols-17 {
   grid-template-columns: repeat(17,minmax(0,1fr));
 }
+
+.grid-cols-jobs-auto {
+  /* Tracks: [Chevron] [Job] [Cust. (flex)] [Timeline] [Op #] [Resrc.] [Loc.] [TTR] */
+  grid-template-columns:
+    auto        /* chevron */
+    max-content /* job id */
+    minmax(8rem, 1fr) /* customer - flexible */
+    max-content /* timeline (stacked dates, compact) */
+    max-content /* op # (content-sized; no truncation) */
+    max-content /* resource */
+    max-content /* location */
+    max-content /* TTR */
+}
+
+/* Balanced, responsive grid for the Jobs header and rows.
+   Tracks: [Chevron] [Job] [Cust.] [Timeline] [Op #] [Resrc.] [Loc.] [TTR]
+   - Each column takes the min it needs (max-content) and can stretch equally (1fr)
+   - Prevents any single header from feeling visually dominant
+*/
+.grid-cols-jobs-balance {
+  grid-template-columns:
+    auto                         /* chevron */
+    repeat(7, minmax(max-content, 1fr)); /* all data columns */
+}
