@@ -17,7 +17,7 @@ export default function TabbedFactoryCard() {
           <TabsList className="mb-0 grid w-full grid-cols-4">
             <TabsTrigger value="machines">Machines</TabsTrigger>
             <TabsTrigger value="workorders">Work Orders</TabsTrigger>
-            <TabsTrigger value="monday">Monday</TabsTrigger>
+            <TabsTrigger value="monday">Production Tracking</TabsTrigger>
             <TabsTrigger value="mor">MOR</TabsTrigger>
           </TabsList>
 
