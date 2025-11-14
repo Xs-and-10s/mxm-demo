@@ -103,7 +103,6 @@ function FleetSparklineBase({ machines, metric, className = "w-32 h-12" }: Props
           <YAxis domain={[lo, hi]} hide />
           <Tooltip
             content={<SparklineTooltip
-            offset={10}
             metric={metric} />} 
           />
           <Line
