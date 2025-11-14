@@ -2,15 +2,14 @@
 
 import * as React from "react";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
-// import type { Machine } from "@/components/DataTable";
 import type { MachineT } from "@/domain/machine";
 
 type Props = {
-  /** Visible machines after table filter + project chips */
   machines: MachineT[];
   metric: "mtbf" | "mttr";
-  width?: number;  // kept for API compatibility (ResponsiveContainer handles actual sizing)
-  height?: number; // kept for API compatibility
+  width?: number;
+  height?: number;
+  className?: string;
 };
 
 const SPARKLINE_GRAY = "#64748b"; // slate-500
@@ -21,7 +20,37 @@ function fmt(n: unknown) {
   return Number.isInteger(val) ? String(Math.round(val)) : val.toFixed(2);
 }
 
-function FleetSparklineBase({ machines, metric }: Props) {
+// Add custom tooltip component
+function SparklineTooltip({
+  active,
+  payload,
+  metric,
+}: {
+  active?: boolean;
+  payload?: any[];
+  metric: "mtbf" | "mttr";
+}) {
+  if (!active || !payload || payload.length === 0) return null;
+  const datum = payload[0]?.payload as { wk: string; value: number } | undefined;
+  if (!datum) return null;
+
+  const metricLabel = metric.toUpperCase();
+  const weekLabel = `Week -${5 - Number(datum.wk)}`;
+
+  return (
+    <div className="rounded-md border bg-background/65 backdrop-blur-sm p-2 text-sm shadow">
+      <div className="mb-1 font-medium">{weekLabel}</div>
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-muted-foreground">{metricLabel}</span>
+        <span style={{ color: SPARKLINE_GRAY }} className="font-medium">
+          {fmt(datum.value)} h
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function FleetSparklineBase({ machines, metric, className = "w-32 h-12" }: Props) {
   // Build 4-week fleet averages across visible machines
   const weekly = React.useMemo(() => {
     const weeks = 4;
@@ -66,15 +95,16 @@ function FleetSparklineBase({ machines, metric }: Props) {
   const ariaLabel = `Fleet ${metricLabel} average for the past 4 weeks`;
 
   return (
-    <div className="w-full h-full" role="img" aria-label={ariaLabel}>
+    <div className={className} role="img" aria-label={ariaLabel}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={weekly} margin={{ top: 2, right: 8, bottom: 0, left: 8 }}>
           {/* hidden axes (sparkline) */}
           <XAxis dataKey="wk" hide />
           <YAxis domain={[lo, hi]} hide />
           <Tooltip
-            formatter={(v: unknown) => [`${fmt(v)} h`, metricLabel]}
-            labelFormatter={(l) => `Week -${5 - Number(l)}`}
+            content={<SparklineTooltip
+            offset={10}
+            metric={metric} />} 
           />
           <Line
             type="monotone"
